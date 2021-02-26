@@ -3,14 +3,20 @@ package com.mars.rover
 class MarsRover(var position: Pair<Int, Int>, var direction: String) {
 
     fun execute(commands: List<String>) {
-        val command = commands.firstOrNull()
-        
+        commands.forEach { execute(it) }
+    }
+
+    private fun execute(command: String) {
         when (command) {
-            "f" -> position = 1 to 0
+            "f" -> position = moveForward()
+            "b" -> position = moveBackward()
             "l" -> direction = turnLeft()
             "r" -> direction = turnRight()
         }
     }
+
+    private fun moveForward() = move(direction)
+    private fun moveBackward() = move(direction.opposite())
 
     private fun turnLeft() = when (direction) {
         "N" -> "W"
@@ -28,5 +34,24 @@ class MarsRover(var position: Pair<Int, Int>, var direction: String) {
         else -> direction
     }
 
+    private fun move(direction: String): Pair<Int, Int> = when (direction) {
+        "N" -> position.goNorth()
+        "S" -> position.goSouth()
+        "W" -> position.goWest()
+        "E" -> position.goEast()
+        else -> position
+    }
 
+    private fun Pair<Int, Int>.goNorth() = this.copy(second = this.second -1)
+    private fun Pair<Int, Int>.goSouth() = this.copy(second = this.second +1)
+    private fun Pair<Int, Int>.goWest() = this.copy(first = this.first - 1)
+    private fun Pair<Int, Int>.goEast() = this.copy(first = this.first + 1)
+
+    private fun String.opposite() = when(this) {
+        "N" -> "S"
+        "S" -> "N"
+        "W" -> "E"
+        "E" -> "W"
+        else -> this
+    }
 }
