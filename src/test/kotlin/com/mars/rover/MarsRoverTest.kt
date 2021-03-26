@@ -31,6 +31,8 @@ internal class MarsRoverTest {
             Arguments.of(0 to 1, "S", 0 to 2),
             Arguments.of(1 to 0, "W", 0 to 0),
             Arguments.of(1 to 0, "E", 2 to 0),
+            Arguments.of(0 to 0, "N", 0 to 2),
+            Arguments.of(0 to 1, "W", 2 to 1)
         )
 
         @JvmStatic
@@ -38,15 +40,18 @@ internal class MarsRoverTest {
             Arguments.of(1 to 1, "N", 1 to 2),
             Arguments.of(1 to 1, "S", 1 to 0),
             Arguments.of(1 to 1, "W", 2 to 1),
-            Arguments.of(1 to 1, "E", 0 to 1)
+            Arguments.of(1 to 1, "E", 0 to 1),
+            Arguments.of(0 to 2, "N", 0 to 0),
+            Arguments.of(2 to 1, "W", 0 to 1)
         )
     }
 
     @Test
     internal fun `Should create instance with initial position and orientation`() {
+        val world = World(3,3)
         val position = 0 to 0
         val direction = "N"
-        val marsRover = MarsRover(position, direction)
+        val marsRover = MarsRover(position, direction, world)
 
         marsRover.position shouldBe position
         marsRover.direction shouldBe "N"
@@ -55,8 +60,9 @@ internal class MarsRoverTest {
     @ParameterizedTest(name = "The new direction is {1} with initial direction {0}")
     @MethodSource(value = ["leftCommands"])
     internal fun `Should turn left`(initialDirection: String, newDirection: String) {
+        val world = World(3,3)
         val position = 0 to 0
-        val marsRover = MarsRover(position, initialDirection)
+        val marsRover = MarsRover(position, initialDirection, world)
 
         marsRover.execute(listOf("l"))
 
@@ -67,8 +73,9 @@ internal class MarsRoverTest {
     @ParameterizedTest(name = "The new direction is {1} with initial direction {0}")
     @MethodSource(value = ["rightCommands"])
     internal fun `Should turn right`(initialDirection: String, newDirection: String) {
+        val world = World(3,3)
         val position = 0 to 0
-        val marsRover = MarsRover(position, initialDirection)
+        val marsRover = MarsRover(position, initialDirection, world)
 
         marsRover.execute(listOf("r"))
 
@@ -83,7 +90,8 @@ internal class MarsRoverTest {
         direction: String,
         expectedPosition: Pair<Int, Int>
     ) {
-        val marsRover = MarsRover(initialPosition, direction)
+        val world = World(3,3)
+        val marsRover = MarsRover(initialPosition, direction, world)
 
         marsRover.execute(listOf("f"))
 
@@ -98,7 +106,8 @@ internal class MarsRoverTest {
         direction: String,
         expectedPosition: Pair<Int, Int>
     ) {
-        val marsRover = MarsRover(initialPosition, direction)
+        val world = World(3,3)
+        val marsRover = MarsRover(initialPosition, direction, world)
 
         marsRover.execute(listOf("b"))
 
@@ -108,7 +117,8 @@ internal class MarsRoverTest {
 
     @Test
     internal fun `Should accept multiple commands`() {
-        val marsRover = MarsRover(2 to 2, "N")
+        val world = World(3,3)
+        val marsRover = MarsRover(2 to 2, "N", world)
 
         marsRover.execute(listOf("l", "f", "l", "b", "r", "r", "r", "f"))
 
@@ -118,11 +128,23 @@ internal class MarsRoverTest {
 
     @Test
     internal fun `Should do nothing with unknown commands`() {
-        val marsRover = MarsRover(2 to 2, "N")
+        val world = World(3,3)
+        val marsRover = MarsRover(2 to 2, "N", world)
 
         marsRover.execute(listOf("%", "z", "2", "*"))
 
         marsRover.position.shouldBe(2 to 2)
         marsRover.direction shouldBe "N"
+    }
+
+    @Test
+    internal fun `Should stay confined in parisian studio`() {
+        val world = World(1,1)
+        val marsRover = MarsRover(0 to 0, "S", world)
+
+        marsRover.execute(listOf("f", "l", "f", "f", "f", "b", "f", "f"))
+
+        marsRover.position.shouldBe(0 to 0)
+        marsRover.direction shouldBe "E"
     }
 }

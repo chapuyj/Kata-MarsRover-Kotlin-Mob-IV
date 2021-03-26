@@ -3,4 +3,5 @@
 - Use enum for direction
 - Transform commands into enum
 - Use class for Position
-- World
+- Property-based testing for spherical world
+- Obstacles :)
