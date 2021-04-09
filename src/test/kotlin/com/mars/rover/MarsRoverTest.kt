@@ -1,10 +1,13 @@
 package com.mars.rover
 
+import com.mars.rover.SquareType.DESERT
+import com.mars.rover.SquareType.OBSTACLE
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
+
 
 internal class MarsRoverTest {
 
@@ -146,5 +149,67 @@ internal class MarsRoverTest {
 
         marsRover.position.shouldBe(0 to 0)
         marsRover.direction shouldBe "E"
+    }
+
+    // Generator - Should be moved ?
+
+    @Test
+    internal fun `Should generate a world`() {
+        val world = WorldGenerator.create(arrayOf(
+            arrayOf(DESERT, DESERT, DESERT, DESERT),
+            arrayOf(DESERT, DESERT, OBSTACLE, DESERT),
+            arrayOf(OBSTACLE, DESERT, DESERT, DESERT),
+        ))
+
+        world.height shouldBe 3
+        world.width shouldBe 4
+
+        world.topography() shouldBe arrayOf(
+            arrayOf(DESERT, DESERT, DESERT, DESERT),
+            arrayOf(DESERT, DESERT, OBSTACLE, DESERT),
+            arrayOf(OBSTACLE, DESERT, DESERT, DESERT),
+        )
+    }
+
+    @Test
+    internal fun `Should generate a parisian studio with invalid inputs in generator`() {
+        val world = WorldGenerator.create(arrayOf(arrayOf()))
+
+        world.height shouldBe 1
+        world.width shouldBe 1
+    }
+}
+
+class WorldGenerator {
+
+    companion object Factory {
+        fun create(squares: Array<Array<SquareType>>): World {
+            if (worldIsTooSmall(squares)) {
+                return parisianStudio()
+            }
+
+            val height = squares.count()
+            val width = squares[0].count()
+
+            val obstaclePositions = squares.flatten().mapIndexedNotNull { index, square ->
+                val y = index / width
+                val x = index % width
+                if (square == OBSTACLE) {
+                    Pair(x, y)
+                }
+                else {
+                    null
+                }
+            }.toTypedArray()
+
+            obstaclePositions.forEach {print(it)}
+
+            return World(height, width, obstaclePositions)
+        }
+
+        private fun worldIsTooSmall(squares: Array<Array<SquareType>>) =
+            squares.count() < 1 || squares[0].count() < 1
+
+        private fun parisianStudio(): World = World(1, 1)
     }
 }
