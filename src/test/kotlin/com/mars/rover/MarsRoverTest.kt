@@ -181,15 +181,19 @@ internal class MarsRoverTest {
     }
 
     @Test
-    internal fun `Should not be able to move forward in front of obstacle`() {
+    internal fun `Should stop commands if rover encounters an obstacle and reports obstacle`() {
         val world = WorldGenerator.create(arrayOf(
-            arrayOf(DESERT, OBSTACLE, DESERT, DESERT)
+            arrayOf(DESERT, OBSTACLE, DESERT, DESERT),
+            arrayOf(DESERT, DESERT, DESERT, DESERT),
+            arrayOf(DESERT, DESERT, DESERT, DESERT),
         ))
 
-        val marsRover = MarsRover(Point(0, 0), "E", world)
-        marsRover.execute(listOf("f"))
+        val marsRover = MarsRover(Point(1, 2), "N", world)
+        marsRover.execute(listOf("f", "f", "r", "f"))
 
-        marsRover.position shouldBe Point(0, 0)
+        marsRover.detectedObstacle shouldBe Point(1, 0)
+        marsRover.direction shouldBe "N"
+        marsRover.position shouldBe Point(1, 1)
     }
 }
 

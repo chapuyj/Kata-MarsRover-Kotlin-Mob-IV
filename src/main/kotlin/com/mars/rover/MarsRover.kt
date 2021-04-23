@@ -2,18 +2,23 @@ package com.mars.rover
 
 class MarsRover(var position: Point, var direction: String, val world: World) {
 
+    var detectedObstacle: Point? = null
+
     fun execute(commands: List<String>) {
         commands.forEach { execute(it) }
     }
 
     private fun execute(command: String) {
+        if (detectedObstacle != null) {
+            return
+        }
+
         when (command) {
             "f" -> position = moveForward()
             "b" -> position = moveBackward()
             "l" -> direction = turnLeft()
             "r" -> direction = turnRight()
         }
-
     }
 
     private fun moveForward() = move(direction)
@@ -46,6 +51,7 @@ class MarsRover(var position: Point, var direction: String, val world: World) {
         }
 
         return if (world.obstaclePositions.contains(newPosition)) {
+            detectedObstacle = newPosition
             position
         } else newPosition
     }
