@@ -1,8 +1,7 @@
 # Possible next steps
 
-- Use class for Position
-- Check if all tests are good (position) or lucky :p
-- Obstacles
+- Private setter for detectedObstacle
 - Use enum for direction
 - Transform commands into enum
+- Command/State Design Pattern ?
 - Property-based testing for spherical world
