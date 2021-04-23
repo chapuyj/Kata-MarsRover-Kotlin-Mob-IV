@@ -1,6 +1,6 @@
 package com.mars.rover
 
-class MarsRover(var position: Pair<Int, Int>, var direction: String, val world: World) {
+class MarsRover(var position: Point, var direction: String, val world: World) {
 
     fun execute(commands: List<String>) {
         commands.forEach { execute(it) }
@@ -34,7 +34,7 @@ class MarsRover(var position: Pair<Int, Int>, var direction: String, val world: 
         else -> direction
     }
 
-    private fun move(direction: String): Pair<Int, Int> = when (direction) {
+    private fun move(direction: String): Point = when (direction) {
         "N" -> position.goNorth(world)
         "S" -> position.goSouth(world)
         "W" -> position.goWest(world)
@@ -42,34 +42,34 @@ class MarsRover(var position: Pair<Int, Int>, var direction: String, val world: 
         else -> position
     }
 
-    private fun Pair<Int, Int>.goNorth(world: World): Pair<Int, Int> {
-        val futurePosition = this.copy(second = this.second - 1)
-        if (futurePosition.second < 0) {
-            return this.copy(second = world.height - 1)
+    private fun Point.goNorth(world: World): Point {
+        val futurePosition = this.copy(line = this.line - 1)
+        if (futurePosition.line < 0) {
+            return this.copy(line = world.height - 1)
         }
         return futurePosition
     }
 
-    private fun Pair<Int, Int>.goSouth(world: World): Pair<Int, Int> {
-        val futurePosition = this.copy(second = this.second + 1)
-        if (futurePosition.second >= world.height) {
-            return this.copy(second = 0)
+    private fun Point.goSouth(world: World): Point {
+        val futurePosition = this.copy(line = this.line + 1)
+        if (futurePosition.line >= world.height) {
+            return this.copy(line = 0)
         }
         return futurePosition
     }
 
-    private fun Pair<Int, Int>.goWest(world: World): Pair<Int, Int> {
-        val futurePosition = this.copy(first = this.first - 1)
-        if (futurePosition.first < 0) {
-            return this.copy(first = world.width - 1)
+    private fun Point.goWest(world: World): Point {
+        val futurePosition = this.copy(column = this.column - 1)
+        if (futurePosition.column < 0) {
+            return this.copy(column = world.width - 1)
         }
         return futurePosition
     }
 
-    private fun Pair<Int, Int>.goEast(world: World): Pair<Int, Int> {
-        val futurePosition = this.copy(first = this.first + 1)
-        if (futurePosition.first >= world.width) {
-            return this.copy(first = 0)
+    private fun Point.goEast(world: World): Point {
+        val futurePosition = this.copy(column = this.column + 1)
+        if (futurePosition.column >= world.width) {
+            return this.copy(column = 0)
         }
         return futurePosition
     }

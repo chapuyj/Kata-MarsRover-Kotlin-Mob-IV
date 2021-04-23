@@ -30,29 +30,29 @@ internal class MarsRoverTest {
 
         @JvmStatic
         fun forwardCommands() = listOf(
-            Arguments.of(1 to 1, "N", 1 to 0),
-            Arguments.of(0 to 1, "S", 0 to 2),
-            Arguments.of(1 to 0, "W", 0 to 0),
-            Arguments.of(1 to 0, "E", 2 to 0),
-            Arguments.of(0 to 0, "N", 0 to 2),
-            Arguments.of(0 to 1, "W", 2 to 1)
+            Arguments.of(Point(1, 1), "N", Point(1, 0)),
+            Arguments.of(Point(0, 1), "S", Point(0 , 2)),
+            Arguments.of(Point(1, 0), "W", Point(0, 0)),
+            Arguments.of(Point(1, 0), "E", Point(2, 0)),
+            Arguments.of(Point(0, 0), "N", Point(0, 2)),
+            Arguments.of(Point(0, 1), "W", Point(2 , 1))
         )
 
         @JvmStatic
         fun backwardCommands() = listOf(
-            Arguments.of(1 to 1, "N", 1 to 2),
-            Arguments.of(1 to 1, "S", 1 to 0),
-            Arguments.of(1 to 1, "W", 2 to 1),
-            Arguments.of(1 to 1, "E", 0 to 1),
-            Arguments.of(0 to 2, "N", 0 to 0),
-            Arguments.of(2 to 1, "W", 0 to 1)
+            Arguments.of(Point(1, 1), "N", Point(1, 2)),
+            Arguments.of(Point(1, 1), "S", Point(1, 0)),
+            Arguments.of(Point(1, 1), "W", Point(2 , 1)),
+            Arguments.of(Point(1, 1), "E", Point(0, 1)),
+            Arguments.of(Point(0 , 2), "N", Point(0, 0)),
+            Arguments.of(Point(2 , 1), "W", Point(0, 1))
         )
     }
 
     @Test
     internal fun `Should create instance with initial position and orientation`() {
         val world = World(3,3)
-        val position = 0 to 0
+        val position = Point(0, 0)
         val direction = "N"
         val marsRover = MarsRover(position, direction, world)
 
@@ -64,7 +64,7 @@ internal class MarsRoverTest {
     @MethodSource(value = ["leftCommands"])
     internal fun `Should turn left`(initialDirection: String, newDirection: String) {
         val world = World(3,3)
-        val position = 0 to 0
+        val position = Point(0, 0)
         val marsRover = MarsRover(position, initialDirection, world)
 
         marsRover.execute(listOf("l"))
@@ -77,7 +77,7 @@ internal class MarsRoverTest {
     @MethodSource(value = ["rightCommands"])
     internal fun `Should turn right`(initialDirection: String, newDirection: String) {
         val world = World(3,3)
-        val position = 0 to 0
+        val position = Point(0, 0)
         val marsRover = MarsRover(position, initialDirection, world)
 
         marsRover.execute(listOf("r"))
@@ -89,9 +89,9 @@ internal class MarsRoverTest {
     @ParameterizedTest(name = "The new position is {2} after moving forward from position {0} and direction {1}")
     @MethodSource(value = ["forwardCommands"])
     internal fun `Should move forward`(
-        initialPosition: Pair<Int, Int>,
+        initialPosition: Point,
         direction: String,
-        expectedPosition: Pair<Int, Int>
+        expectedPosition: Point
     ) {
         val world = World(3,3)
         val marsRover = MarsRover(initialPosition, direction, world)
@@ -105,9 +105,9 @@ internal class MarsRoverTest {
     @ParameterizedTest(name = "The new position is {2} after moving backward from position {0} and direction {1}")
     @MethodSource(value = ["backwardCommands"])
     internal fun `Should move backward`(
-        initialPosition: Pair<Int, Int>,
+        initialPosition: Point,
         direction: String,
-        expectedPosition: Pair<Int, Int>
+        expectedPosition: Point
     ) {
         val world = World(3,3)
         val marsRover = MarsRover(initialPosition, direction, world)
@@ -121,33 +121,33 @@ internal class MarsRoverTest {
     @Test
     internal fun `Should accept multiple commands`() {
         val world = World(3,3)
-        val marsRover = MarsRover(2 to 2, "N", world)
+        val marsRover = MarsRover(Point(2, 2), "N", world)
 
         marsRover.execute(listOf("l", "f", "l", "b", "r", "r", "r", "f"))
 
-        marsRover.position.shouldBe(2 to 1)
+        marsRover.position.shouldBe(Point(2, 1))
         marsRover.direction shouldBe "E"
     }
 
     @Test
     internal fun `Should do nothing with unknown commands`() {
         val world = World(3,3)
-        val marsRover = MarsRover(2 to 2, "N", world)
+        val marsRover = MarsRover(Point(2, 2), "N", world)
 
         marsRover.execute(listOf("%", "z", "2", "*"))
 
-        marsRover.position.shouldBe(2 to 2)
+        marsRover.position.shouldBe(Point(2, 2))
         marsRover.direction shouldBe "N"
     }
 
     @Test
     internal fun `Should stay confined in parisian studio`() {
         val world = World(1,1)
-        val marsRover = MarsRover(0 to 0, "S", world)
+        val marsRover = MarsRover(Point(0, 0), "S", world)
 
         marsRover.execute(listOf("f", "l", "f", "f", "f", "b", "f", "f"))
 
-        marsRover.position.shouldBe(0 to 0)
+        marsRover.position.shouldBe(Point(0, 0))
         marsRover.direction shouldBe "E"
     }
 
@@ -192,10 +192,10 @@ class WorldGenerator {
             val width = squares[0].count()
 
             val obstaclePositions = squares.flatten().mapIndexedNotNull { index, square ->
-                val y = index / width
-                val x = index % width
+                val line = index / width
+                val column = index % width
                 if (square == OBSTACLE) {
-                    Pair(x, y)
+                    Point(column, line)
                 }
                 else {
                     null
