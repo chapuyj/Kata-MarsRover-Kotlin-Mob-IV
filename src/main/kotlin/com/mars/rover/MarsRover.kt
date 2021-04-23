@@ -13,6 +13,7 @@ class MarsRover(var position: Point, var direction: String, val world: World) {
             "l" -> direction = turnLeft()
             "r" -> direction = turnRight()
         }
+
     }
 
     private fun moveForward() = move(direction)
@@ -34,13 +35,21 @@ class MarsRover(var position: Point, var direction: String, val world: World) {
         else -> direction
     }
 
-    private fun move(direction: String): Point = when (direction) {
-        "N" -> position.goNorth(world)
-        "S" -> position.goSouth(world)
-        "W" -> position.goWest(world)
-        "E" -> position.goEast(world)
-        else -> position
+    private fun move(direction: String): Point {
+
+        val newPosition = when (direction) {
+            "N" -> position.goNorth(world)
+            "S" -> position.goSouth(world)
+            "W" -> position.goWest(world)
+            "E" -> position.goEast(world)
+            else -> position
+        }
+
+        return if (world.obstaclePositions.contains(newPosition)) {
+            position
+        } else newPosition
     }
+
 
     private fun Point.goNorth(world: World): Point {
         val futurePosition = this.copy(line = this.line - 1)

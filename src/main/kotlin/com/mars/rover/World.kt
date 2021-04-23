@@ -1,6 +1,6 @@
 package com.mars.rover
 
-class World(val height: Int, val width: Int, val obstaclePositions: Array<Point> = arrayOf()) {
+class World(val height: Int, val width: Int, val obstaclePositions: Set<Point> = setOf()) {
 
     fun topography(): Array<Array<SquareType>> {
 

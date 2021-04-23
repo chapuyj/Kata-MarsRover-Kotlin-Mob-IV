@@ -151,6 +151,7 @@ internal class MarsRoverTest {
         marsRover.direction shouldBe "E"
     }
 
+
     // Generator - Should be moved ?
 
     @Test
@@ -178,6 +179,18 @@ internal class MarsRoverTest {
         world.height shouldBe 1
         world.width shouldBe 1
     }
+
+    @Test
+    internal fun `Should not be able to move forward in front of obstacle`() {
+        val world = WorldGenerator.create(arrayOf(
+            arrayOf(DESERT, OBSTACLE, DESERT, DESERT)
+        ))
+
+        val marsRover = MarsRover(Point(0, 0), "E", world)
+        marsRover.execute(listOf("f"))
+
+        marsRover.position shouldBe Point(0, 0)
+    }
 }
 
 class WorldGenerator {
@@ -200,7 +213,7 @@ class WorldGenerator {
                 else {
                     null
                 }
-            }.toTypedArray()
+            }.toSet()
 
             obstaclePositions.forEach {print(it)}
 
