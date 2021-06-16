@@ -1,8 +1,20 @@
 package com.mars.rover
 
+import com.mars.rover.CommandEnum.BACKWARD
+import com.mars.rover.CommandEnum.FORWARD
+import com.mars.rover.CommandEnum.LEFT
+import com.mars.rover.CommandEnum.RIGHT
 import com.mars.rover.SquareType.DESERT
 import com.mars.rover.SquareType.OBSTACLE
+import com.mars.rover.DirectionEnum.NORTH
+import com.mars.rover.DirectionEnum.SOUTH
+import com.mars.rover.DirectionEnum.EAST
+import com.mars.rover.DirectionEnum.WEST
+import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.shouldBe
+import io.kotest.property.Arb
+import io.kotest.property.arbitrary.int
+import io.kotest.property.forAll
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
@@ -14,38 +26,38 @@ internal class MarsRoverTest {
     companion object {
         @JvmStatic
         fun leftCommands() = listOf(
-            Arguments.of("N", "W"),
-            Arguments.of("W", "S"),
-            Arguments.of("E", "N"),
-            Arguments.of("S", "E")
+            Arguments.of(NORTH, WEST),
+            Arguments.of(WEST, SOUTH),
+            Arguments.of(EAST, NORTH),
+            Arguments.of(SOUTH, EAST)
         )
 
         @JvmStatic
         fun rightCommands() = listOf(
-            Arguments.of("N", "E"),
-            Arguments.of("W", "N"),
-            Arguments.of("E", "S"),
-            Arguments.of("S", "W")
+            Arguments.of(NORTH, EAST),
+            Arguments.of(WEST, NORTH),
+            Arguments.of(EAST, SOUTH),
+            Arguments.of(SOUTH, WEST)
         )
 
         @JvmStatic
         fun forwardCommands() = listOf(
-            Arguments.of(Point(1, 1), "N", Point(1, 0)),
-            Arguments.of(Point(0, 1), "S", Point(0 , 2)),
-            Arguments.of(Point(1, 0), "W", Point(0, 0)),
-            Arguments.of(Point(1, 0), "E", Point(2, 0)),
-            Arguments.of(Point(0, 0), "N", Point(0, 2)),
-            Arguments.of(Point(0, 1), "W", Point(2 , 1))
+            Arguments.of(Point(1, 1), NORTH, Point(1, 0)),
+            Arguments.of(Point(0, 1), SOUTH, Point(0 , 2)),
+            Arguments.of(Point(1, 0), WEST, Point(0, 0)),
+            Arguments.of(Point(1, 0), EAST, Point(2, 0)),
+            Arguments.of(Point(0, 0), NORTH, Point(0, 2)),
+            Arguments.of(Point(0, 1), WEST, Point(2 , 1))
         )
 
         @JvmStatic
         fun backwardCommands() = listOf(
-            Arguments.of(Point(1, 1), "N", Point(1, 2)),
-            Arguments.of(Point(1, 1), "S", Point(1, 0)),
-            Arguments.of(Point(1, 1), "W", Point(2 , 1)),
-            Arguments.of(Point(1, 1), "E", Point(0, 1)),
-            Arguments.of(Point(0 , 2), "N", Point(0, 0)),
-            Arguments.of(Point(2 , 1), "W", Point(0, 1))
+            Arguments.of(Point(1, 1), NORTH, Point(1, 2)),
+            Arguments.of(Point(1, 1), SOUTH, Point(1, 0)),
+            Arguments.of(Point(1, 1), WEST, Point(2 , 1)),
+            Arguments.of(Point(1, 1), EAST, Point(0, 1)),
+            Arguments.of(Point(0 , 2), NORTH, Point(0, 0)),
+            Arguments.of(Point(2 , 1), WEST, Point(0, 1))
         )
     }
 
@@ -53,21 +65,21 @@ internal class MarsRoverTest {
     internal fun `Should create instance with initial position and orientation`() {
         val world = World(3,3)
         val position = Point(0, 0)
-        val direction = "N"
+        val direction = NORTH
         val marsRover = MarsRover(position, direction, world)
 
         marsRover.position shouldBe position
-        marsRover.direction shouldBe "N"
+        marsRover.direction shouldBe NORTH
     }
 
     @ParameterizedTest(name = "The new direction is {1} with initial direction {0}")
     @MethodSource(value = ["leftCommands"])
-    internal fun `Should turn left`(initialDirection: String, newDirection: String) {
+    internal fun `Should turn left`(initialDirection: DirectionEnum, newDirection: DirectionEnum) {
         val world = World(3,3)
         val position = Point(0, 0)
         val marsRover = MarsRover(position, initialDirection, world)
 
-        marsRover.execute(listOf("l"))
+        marsRover.execute(listOf(LEFT))
 
         marsRover.position shouldBe position
         marsRover.direction shouldBe newDirection
@@ -75,12 +87,12 @@ internal class MarsRoverTest {
 
     @ParameterizedTest(name = "The new direction is {1} with initial direction {0}")
     @MethodSource(value = ["rightCommands"])
-    internal fun `Should turn right`(initialDirection: String, newDirection: String) {
+    internal fun `Should turn right`(initialDirection: DirectionEnum, newDirection: DirectionEnum) {
         val world = World(3,3)
         val position = Point(0, 0)
         val marsRover = MarsRover(position, initialDirection, world)
 
-        marsRover.execute(listOf("r"))
+        marsRover.execute(listOf(RIGHT))
 
         marsRover.position shouldBe position
         marsRover.direction shouldBe newDirection
@@ -90,13 +102,13 @@ internal class MarsRoverTest {
     @MethodSource(value = ["forwardCommands"])
     internal fun `Should move forward`(
         initialPosition: Point,
-        direction: String,
+        direction: DirectionEnum,
         expectedPosition: Point
     ) {
         val world = World(3,3)
         val marsRover = MarsRover(initialPosition, direction, world)
 
-        marsRover.execute(listOf("f"))
+        marsRover.execute(listOf(FORWARD))
 
         marsRover.position.shouldBe(expectedPosition)
         marsRover.direction shouldBe direction
@@ -106,13 +118,13 @@ internal class MarsRoverTest {
     @MethodSource(value = ["backwardCommands"])
     internal fun `Should move backward`(
         initialPosition: Point,
-        direction: String,
+        direction: DirectionEnum,
         expectedPosition: Point
     ) {
         val world = World(3,3)
         val marsRover = MarsRover(initialPosition, direction, world)
 
-        marsRover.execute(listOf("b"))
+        marsRover.execute(listOf(BACKWARD))
 
         marsRover.position.shouldBe(expectedPosition)
         marsRover.direction shouldBe direction
@@ -121,34 +133,23 @@ internal class MarsRoverTest {
     @Test
     internal fun `Should accept multiple commands`() {
         val world = World(3,3)
-        val marsRover = MarsRover(Point(2, 2), "N", world)
+        val marsRover = MarsRover(Point(2, 2), NORTH, world)
 
-        marsRover.execute(listOf("l", "f", "l", "b", "r", "r", "r", "f"))
+        marsRover.execute(listOf(LEFT, FORWARD, LEFT, BACKWARD, RIGHT, RIGHT, RIGHT, FORWARD))
 
         marsRover.position.shouldBe(Point(2, 1))
-        marsRover.direction shouldBe "E"
-    }
-
-    @Test
-    internal fun `Should do nothing with unknown commands`() {
-        val world = World(3,3)
-        val marsRover = MarsRover(Point(2, 2), "N", world)
-
-        marsRover.execute(listOf("%", "z", "2", "*"))
-
-        marsRover.position.shouldBe(Point(2, 2))
-        marsRover.direction shouldBe "N"
+        marsRover.direction shouldBe EAST
     }
 
     @Test
     internal fun `Should stay confined in parisian studio`() {
         val world = World(1,1)
-        val marsRover = MarsRover(Point(0, 0), "S", world)
+        val marsRover = MarsRover(Point(0, 0), SOUTH, world)
 
-        marsRover.execute(listOf("f", "l", "f", "f", "f", "b", "f", "f"))
+        marsRover.execute(listOf(FORWARD, LEFT, FORWARD, FORWARD, FORWARD, BACKWARD, FORWARD, FORWARD))
 
         marsRover.position.shouldBe(Point(0, 0))
-        marsRover.direction shouldBe "E"
+        marsRover.direction shouldBe EAST
     }
 
     @Test
@@ -185,11 +186,19 @@ internal class MarsRoverTest {
             arrayOf(DESERT, DESERT, DESERT, DESERT),
         ))
 
-        val marsRover = MarsRover(Point(1, 2), "N", world)
-        marsRover.execute(listOf("f", "f", "r", "f"))
+        val marsRover = MarsRover(Point(1, 2), NORTH, world)
+        marsRover.execute(listOf(FORWARD, FORWARD, RIGHT, FORWARD))
 
         marsRover.detectedObstacle shouldBe Point(1, 0)
-        marsRover.direction shouldBe "N"
+        marsRover.direction shouldBe NORTH
         marsRover.position shouldBe Point(1, 1)
     }
 }
+
+//internal class PropertyExample: StringSpec({
+//    "String size" {
+//        forAll<CommandEnum>(5) { b ->
+//            b == b
+//        }
+//    }
+//})

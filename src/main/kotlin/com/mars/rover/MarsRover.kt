@@ -1,23 +1,33 @@
 package com.mars.rover
 
-class MarsRover(var position: Point, var direction: String, val world: World) {
+import com.mars.rover.CommandEnum.BACKWARD
+import com.mars.rover.CommandEnum.FORWARD
+import com.mars.rover.CommandEnum.LEFT
+import com.mars.rover.CommandEnum.RIGHT
+import com.mars.rover.DirectionEnum.NORTH
+import com.mars.rover.DirectionEnum.SOUTH
+import com.mars.rover.DirectionEnum.EAST
+import com.mars.rover.DirectionEnum.WEST
+
+class MarsRover(var position: Point, var direction: DirectionEnum, val world: World) {
 
     var detectedObstacle: Point? = null
+        private set
 
-    fun execute(commands: List<String>) {
+    fun execute(commands: List<CommandEnum>) {
         commands.forEach { execute(it) }
     }
 
-    private fun execute(command: String) {
+    private fun execute(command: CommandEnum) {
         if (detectedObstacle != null) {
             return
         }
 
         when (command) {
-            "f" -> position = moveForward()
-            "b" -> position = moveBackward()
-            "l" -> direction = turnLeft()
-            "r" -> direction = turnRight()
+            FORWARD -> position = moveForward()
+            BACKWARD -> position = moveBackward()
+            LEFT -> direction = turnLeft()
+            RIGHT -> direction = turnRight()
         }
     }
 
@@ -25,29 +35,26 @@ class MarsRover(var position: Point, var direction: String, val world: World) {
     private fun moveBackward() = move(direction.opposite())
 
     private fun turnLeft() = when (direction) {
-        "N" -> "W"
-        "W" -> "S"
-        "S" -> "E"
-        "E" -> "N"
-        else -> direction
+        NORTH -> WEST
+        WEST -> SOUTH
+        SOUTH -> EAST
+        EAST -> NORTH
     }
 
     private fun turnRight() = when (direction) {
-        "N" -> "E"
-        "E" -> "S"
-        "S" -> "W"
-        "W" -> "N"
-        else -> direction
+        NORTH -> EAST
+        EAST -> SOUTH
+        SOUTH -> WEST
+        WEST -> NORTH
     }
 
-    private fun move(direction: String): Point {
+    private fun move(direction: DirectionEnum): Point {
 
         val newPosition = when (direction) {
-            "N" -> position.goNorth(world)
-            "S" -> position.goSouth(world)
-            "W" -> position.goWest(world)
-            "E" -> position.goEast(world)
-            else -> position
+            NORTH -> position.goNorth(world)
+            SOUTH -> position.goSouth(world)
+            WEST -> position.goWest(world)
+            EAST -> position.goEast(world)
         }
 
         return if (world.obstaclePositions.contains(newPosition)) {
@@ -87,13 +94,5 @@ class MarsRover(var position: Point, var direction: String, val world: World) {
             return this.copy(column = 0)
         }
         return futurePosition
-    }
-
-    private fun String.opposite() = when(this) {
-        "N" -> "S"
-        "S" -> "N"
-        "W" -> "E"
-        "E" -> "W"
-        else -> this
     }
 }

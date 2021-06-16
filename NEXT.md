@@ -1,7 +1,9 @@
 # Possible next steps
 
-- Private setter for detectedObstacle
-- Use enum for direction
-- Transform commands into enum
+- Use enum for direction - **Done**
+- Transform commands into enum - **Done**
+- Private setter for detectedObstacle - **Done**
+- Add better command execution report (which command encounter an obstacle)
 - Command/State Design Pattern ?
-- Property-based testing for spherical world
+- [Property-based testing](https://kotest.io/docs/proptest/property-test-functions.html) for spherical world
+  
