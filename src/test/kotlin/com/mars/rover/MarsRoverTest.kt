@@ -183,10 +183,31 @@ internal class MarsRoverTest {
         ))
 
         val marsRover = MarsRover(Point(1, 2), NORTH, world)
-        marsRover.execute(listOf(FORWARD, FORWARD, RIGHT, FORWARD))
+        marsRover.execute(listOf(FORWARD, FORWARD, RIGHT, FORWARD)) 
 
         marsRover.detectedObstacle shouldBe Point(1, 0)
         marsRover.direction shouldBe NORTH
         marsRover.position shouldBe Point(1, 1)
     }
+
+    @Test
+    internal fun `Should return information about command execution`() {
+        val world = WorldGenerator.create(arrayOf(
+                arrayOf(DESERT, OBSTACLE, DESERT, DESERT),
+                arrayOf(DESERT, DESERT, DESERT, DESERT),
+                arrayOf(DESERT, DESERT, DESERT, DESERT),
+        ))
+
+        val marsRover = MarsRover(Point(0, 2), EAST, world)
+        marsRover.execute(listOf(FORWARD, FORWARD, FORWARD))
+        
+        marsRover.direction shouldBe EAST
+        marsRover.position shouldBe Point(3, 2)
+    }
 }
+
+sealed class CommandOutput {
+    data class EncounterObstacle(val commandList: CommandEnum, val obstacle : Point): CommandOutput()
+    object Success: CommandOutput()
+}
+        
