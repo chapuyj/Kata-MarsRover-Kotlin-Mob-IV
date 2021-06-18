@@ -8,9 +8,29 @@ import com.mars.rover.DirectionEnum.NORTH
 import com.mars.rover.DirectionEnum.SOUTH
 import com.mars.rover.DirectionEnum.EAST
 import com.mars.rover.DirectionEnum.WEST
+import javax.swing.text.Position
 
-class MarsRover(var position: Point, var direction: DirectionEnum, val world: World) {
+class MarsRover {
 
+    var position: Point
+        private set
+    
+    var direction: DirectionEnum
+        private set
+    
+    private val world: World
+
+    constructor(position: Point, direction: DirectionEnum, world: World) {        
+        if (position.column >= world.width || position.column < 0 || position.line >= world.height || position.line < 0) {
+            this.position = Point(0,0)
+        } else {
+            this.position = position
+        }
+        
+        this.direction = direction
+        this.world = world
+    }
+    
     var detectedObstacle: Point? = null
         private set
 
