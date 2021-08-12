@@ -5,5 +5,5 @@
 - Private setter for detectedObstacle - **Done**
 - Add better command execution report (which command encounter an obstacle)
 - Command/State Design Pattern ?
-- [Property-based testing](https://kotest.io/docs/proptest/property-test-functions.html) for spherical world
+- [Property-based testing](https://kotest.io/docs/proptest/property-test-functions.html) for spherical world - **DOING**
   
